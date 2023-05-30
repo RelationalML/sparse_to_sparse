@@ -8,11 +8,11 @@ args = None
 
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description="PyTorch ImageNet Training for STR, DNW and GMP")
+    parser = argparse.ArgumentParser(description="PyTorch code for LRR vs IMP")
 
     # General Config
     parser.add_argument(
-        "--data", help="path to dataset base directory", default="/mnt/disk1/datasets"
+        "--data", help="path to dataset base directory", default=""
     )
     parser.add_argument("--optimizer", help="Which optimizer to use", default="sgd")
     parser.add_argument("--set", help="name of dataset", type=str, default="ImageNet")
@@ -67,13 +67,20 @@ def parse_arguments():
         dest="lr",
     )
     parser.add_argument(
+        "--lr-min",
+        default=0.01,
+        type=float,
+        metavar="LR-min",
+        help="lowest possible lr"    
+    )
+    parser.add_argument(
         "--warmup_length", default=0, type=int, help="Number of warmup iterations"
     )
     parser.add_argument(
         "--init_prune_epoch", default=0, type=int, help="Init epoch for pruning in GMP"
     )
     parser.add_argument(
-        "--final_prune_epoch", default=-100, type=int, help="Final epoch for pruning in GMP"
+        "--final_prune_epoch", default=100, type=int, help="Final epoch for pruning in GMP"
     )
     parser.add_argument(
         "--momentum", default=0.9, type=float, metavar="M", help="momentum"
@@ -254,6 +261,55 @@ def parse_arguments():
         "--ignore-pretrained-weights", action="store_true", help="ignore the weights of a pretrained model."
     )
 
+    parser.add_argument("--threshold-list", nargs="*", type=float, default=[0.5])
+    parser.add_argument("--warmup", action='store_true', default=True)
+    parser.add_argument("--reset-weights", action='store_true', default=False)
+    parser.add_argument("--warmup-epochs", type=int, default=10)
+    parser.add_argument("--pruner", type=str, default='', help="pruning method")
+    parser.add_argument("--prune-random-structured", action='store_true', default=False)
+    parser.add_argument("--structured-pruned-iters", type=int, default=10)
+    parser.add_argument("--structured-budget", type=int, default=100)
+    parser.add_argument("--fix-first-last-structured", action='store_true', default=False)
+
+    parser.add_argument("--result-dir", type=str, default='results', help="pruning method")
+    parser.add_argument("--resnet-type", type=str, default='small-dense', help="resnet-width")
+    parser.add_argument("--width", type=int, default=64, help="width resnet small dense")
+
+    parser.add_argument("--structured-prune-type", type=str, default='balanced', help="pruning method for the structured part, used in main_combined")
+    parser.add_argument("--structured-prune-ratio", type=float, default=0.005, help = 'balanced removal of neurons, 0.01 for ResNet18 full width')
+    parser.add_argument("--target-width", type=int, default=256, help = 'target width to achieve after structure pruning in each layer')
+    parser.add_argument("--hessian", action='store_true', default=False)
+
+    # These attributes are only for imagenet (used in main_imagenet)
+    parser.add_argument("--warmup-lr", type=float, default=0.01)
+    parser.add_argument("--prune-lr", type=float, default=0.01)
+
+    parser.add_argument("--mnist-width", type=int, default=256)
+
+    # 
+    parser.add_argument("--target-expt-name", type=str, default='', help="target mask experiment name")
+
+    #
+    parser.add_argument("--load-before-prune", action='store_true', default=False)
+    parser.add_argument("--load-model-name", type=str, default='load model from checkpoint', help="target mask to prune to")
+    parser.add_argument("--load-mask-name", type=str, default='load mask from checkpoint', help="target mask, er model init")
+
+    parser.add_argument("--prune-scheduler", type=str, default='cosine', help="which scheduler to use for pruning")
+
+    parser.add_argument("--constant-prune-lr", type=float, default=0.1, help="which scheduler to use for pruning")
+
+    parser.add_argument("--reset-weight-sign", action='store_true', default=False)
+    parser.add_argument("--load-only-model", action='store_true', default=False)
+    parser.add_argument("--load-model-mask-and-sign", action='store_true', default=False)
+
+    parser.add_argument("--load-shuffled-model-mask-and-sign", action='store_true', default=False)
+
+    parser.add_argument("--reset-weight-amplitude", action='store_true', default=False)
+    parser.add_argument("--reset-only-weight-sign", action='store_true', default=False)
+    parser.add_argument("--reset-only-bn", action='store_true', default=False)
+
+    parser.add_argument("--load-expt-sign", type=str, default='', help='model whose sign to add to weights during reset of IMP')
+    
     args = parser.parse_args()
 
     get_config(args)

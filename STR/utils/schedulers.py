@@ -23,12 +23,11 @@ def assign_learning_rate(optimizer, new_lr):
 
 
 def constant_lr(optimizer, args, **kwargs):
-    def _lr_adjuster(epoch, iteration):
-        if epoch < args.warmup_length:
-            lr = _warmup_lr(args.lr, args.warmup_length, epoch)
-        else:
-            lr = args.lr
-
+    def _lr_adjuster(epoch):
+        # if epoch < args.warmup_length:
+        #     lr = _warmup_lr(args.lr, args.warmup_length, epoch)
+        # else:
+        lr = args.lr
         assign_learning_rate(optimizer, lr)
 
         return lr
@@ -36,21 +35,27 @@ def constant_lr(optimizer, args, **kwargs):
     return _lr_adjuster
 
 
-def cosine_lr(optimizer, args, **kwargs):
-    def _lr_adjuster(epoch, iteration):
-        if epoch < args.warmup_length:
-            lr = _warmup_lr(args.lr, args.warmup_length, epoch)
-        else:
-            e = epoch - args.warmup_length
-            es = args.epochs - args.warmup_length
-            lr = 0.5 * (1 + np.cos(np.pi * e / es)) * args.lr
+def warmup_lr(optimizer, args, **kwargs):
+    def _lr_adjuster(epoch):
+        lr = _warmup_lr(args.lr, args.warmup_epochs, epoch)
+
+        assign_learning_rate(optimizer, lr)
+
+    return _lr_adjuster
+
+# define scheduler
+def cosine_lr(optimizer, total_epochs, args, **kwargs):
+    def _lr_adjuster(epoch):
+    
+        e = epoch
+        es = total_epochs
+        lr = args.lr_min + 0.5 * (1 + np.cos(np.pi * e / es)) * (args.lr - args.lr_min)
 
         assign_learning_rate(optimizer, lr)
 
         return lr
 
     return _lr_adjuster
-
 
 def efficientnet_lr(optimizer, args, **kwargs):
     def _lr_adjuster(epoch, iteration):
@@ -67,10 +72,10 @@ def efficientnet_lr(optimizer, args, **kwargs):
 
 
 def multistep_lr(optimizer, args, **kwargs):
-    """Sets the learning rate to the initial LR decayed by 10 every 30 epochs"""
+    """Sets the learning rate to the initial LR decayed by 10 every 60 epochs"""
 
-    def _lr_adjuster(epoch, iteration):
-        lr = args.lr * (args.lr_gamma ** (epoch // args.lr_adjust))
+    def _lr_adjuster(epoch):
+        lr = args.lr * (0.1 ** (epoch // 60))
 
         assign_learning_rate(optimizer, lr)
 

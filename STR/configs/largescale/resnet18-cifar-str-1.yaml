@@ -5,26 +5,23 @@
 # ===== Dataset ===== #
 # data: /mnt/data/
 set: cifar10
-name: cifar_0.3_ER_ERK_STR_2
-
 # ===== Learning Rate Policy ======== #
 optimizer: sgd
 lr: 0.1
 lr_policy: cosine_lr
-warmup_length: 5
+warmup_length: 0
 
 # ===== Network training config ===== #
-epochs: 100
-weight_decay: 0.001 # Change this according to reported numbers in appendix
+epochs: 160
+weight_decay: 0.0001 # Change this according to reported numbers in appendix
 momentum: 0.9
 batch_size: 256
-label_smoothing: 0.1
-
+final_prune_epoch: 30
 # ===== Sparsity =========== #
-er_sparse_init: 0.3
-er_sparse_method: ERK
-# er_sparsity_file: ER_STR_cifar_0.3_ERK_2.json
-conv_type: STRConvER
+er_sparse_method: none
+er_sparse_init: 1
+
+conv_type: ConvMask
 bn_type: LearnedBatchNorm
 init: kaiming_normal
 mode: fan_in

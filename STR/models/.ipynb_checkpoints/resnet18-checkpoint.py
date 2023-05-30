@@ -174,11 +174,11 @@ def ResNet152(input_shape, num_classes, dense_classifier=False, pretrained=True)
 class ResNetWidth(nn.Module):
     def __init__(self, builder, block, num_blocks, width, num_classes=10):
         super(ResNetWidth, self).__init__()
-        self.in_planes = width
+        self.in_planes = 64
 
-        self.conv1 = builder.conv3x3(3, width)
+        self.conv1 = builder.conv3x3(3, 64)
         
-        self.bn1 = builder.batchnorm(width)
+        self.bn1 = builder.batchnorm(64)
         self.layer1 = self._make_layer(builder, block, width, num_blocks[0], stride=1)
         self.layer2 = self._make_layer(builder, block, width, num_blocks[1], stride=2)
         self.layer3 = self._make_layer(builder, block, width, num_blocks[2], stride=2)
@@ -216,117 +216,3 @@ def ResNetWidth34(input_shape, num_classes, width=128, dense_classifier=False, p
 
 def ResNetWidth50(input_shape, num_classes, width=128, dense_classifier=False, pretrained=True):
     return ResNetWidth(get_builder(), Bottleneck, [3, 4, 6, 3], width, num_classes)
-
-
-class ResNetWidthIncreasing(nn.Module):
-    def __init__(self, builder, block, num_blocks, width, num_classes=10):
-        super(ResNetWidthIncreasing, self).__init__()
-        self.in_planes = width
-
-        self.conv1 = builder.conv3x3(3, width)
-        
-        self.bn1 = builder.batchnorm(width)
-        self.layer1 = self._make_layer(builder, block, width, num_blocks[0], stride=1)
-        self.layer2 = self._make_layer(builder, block, 2 * width, num_blocks[1], stride=2)
-        self.layer3 = self._make_layer(builder, block, 4 * width, num_blocks[2], stride=2)
-        self.layer4 = self._make_layer(builder, block, 8 * width, num_blocks[3], stride=2)
-        self.linear = builder.conv1x1(8 * width * block.expansion, num_classes)
-
-    def _make_layer(self, builder, block, planes, num_blocks, stride):
-        
-        strides = [stride] + [1]*(num_blocks-1)
-        layers = []
-        for stride in strides:
-            layers.append(block(builder, self.in_planes, planes, stride))
-            self.in_planes = planes * block.expansion
-        return nn.Sequential(*layers)
-
-    def forward(self, x):
-        out = F.relu(self.bn1(self.conv1(x)))
-        out = self.layer1(out)
-        out = self.layer2(out)
-        out = self.layer3(out)
-        out = self.layer4(out)
-        out = F.avg_pool2d(out, 4)
-        out = self.linear(out).squeeze()
-
-        return out
-
-
-def ResNetWidth18Inc(input_shape, num_classes, width=64, dense_classifier=False, pretrained=True):
-    return ResNetWidthIncreasing(get_builder(), BasicBlock, [2, 2, 2, 2], width, num_classes)
-
-
-def ResNetWidth34Inc(input_shape, num_classes, width=128, dense_classifier=False, pretrained=True):
-    return ResNetWidthIncreasing(get_builder(), BasicBlock, [3, 4, 6, 3], width, num_classes)
-
-
-def ResNetWidth50Inc(input_shape, num_classes, width=128, dense_classifier=False, pretrained=True):
-    return ResNetWidthIncreasing(get_builder(), Bottleneck, [3, 4, 6, 3], width, num_classes)
-
-
-
-class ResNetWidthSub(nn.Module):
-    def __init__(self, builder, block, num_blocks, width, num_classes=10):
-        super(ResNetWidthSub, self).__init__()
-        self.in_planes = 64
-        possible_width = [64, 96, 128, 192, 224, 256, 320, 512]
-        if width not in possible_width:
-            print('this width is not available, resorting to the original full resnet')
-
-        width_list = [64, 128, 256, 512]
-        if width == 64:
-            width_list = [64, 64, 64, 64]
-        if width == 96:
-            width_list = [64, 96, 96, 96]
-        if width == 128:
-            width_list = [64, 128, 128, 128]
-        if width == 192:
-            width_list = [64, 128, 192, 192]
-        if width == 224:
-            width_list = [64, 128, 224, 224]
-        if width == 256:
-            width_list = [64, 128, 256, 256]
-        if width == 320:
-            width_list = [64, 128, 256, 320]
-        print('Resnet with widths: ', width_list)
-        self.conv1 = builder.conv3x3(3, 64)
-        
-        self.bn1 = builder.batchnorm(64)
-        self.layer1 = self._make_layer(builder, block, 64, num_blocks[0], stride=1)
-        self.layer2 = self._make_layer(builder, block, width_list[1], num_blocks[1], stride=2)
-        self.layer3 = self._make_layer(builder, block, width_list[2], num_blocks[2], stride=2)
-        self.layer4 = self._make_layer(builder, block, width_list[3], num_blocks[3], stride=2)
-        self.linear = builder.conv1x1(width_list[3]*block.expansion, num_classes)
-
-    def _make_layer(self, builder, block, planes, num_blocks, stride):
-        
-        strides = [stride] + [1]*(num_blocks-1)
-        layers = []
-        for stride in strides:
-            layers.append(block(builder, self.in_planes, planes, stride))
-            self.in_planes = planes * block.expansion
-        return nn.Sequential(*layers)
-
-    def forward(self, x):
-        out = F.relu(self.bn1(self.conv1(x)))
-        out = self.layer1(out)
-        out = self.layer2(out)
-        out = self.layer3(out)
-        out = self.layer4(out)
-        out = F.avg_pool2d(out, 4)
-        out = self.linear(out).squeeze()
-
-        return out
-
-
-def ResNetWidthSub18(input_shape, num_classes, width, dense_classifier=False, pretrained=True):
-    return ResNetWidthSub(get_builder(), BasicBlock, [2, 2, 2, 2], width, num_classes)
-
-
-def ResNetWidthSub34(input_shape, num_classes, width, dense_classifier=False, pretrained=True):
-    return ResNetWidthSub(get_builder(), BasicBlock, [3, 4, 6, 3], width, num_classes)
-
-
-def ResNetWidthSub50(input_shape, num_classes, width, dense_classifier=False, pretrained=True):
-    return ResNetWidthSub(get_builder(), Bottleneck, [3, 4, 6, 3], width, num_classes)
