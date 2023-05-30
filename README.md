@@ -1,14 +1,10 @@
-# How Erdös and Rényi Win the Lottery
+# Official code for the paper: 'Why Random Pruning Is All We Need to Start Sparse' published in ICML 2023.
 
-## Requirements
-- Python 3.6
-- PyTorch v1.5.1
-- CUDA v10.2
 
 ## Experiments
 
 
-### ER Weak Lottery Tickets
+### Random Pruning
 Arguments:
 ```
 --sparse: Enable sparse mode
@@ -21,7 +17,7 @@ Arguments:
 
 Commands:
 ```
-cd ER_WLT
+cd STR
 python main.py --sparse --seed 1 --sparse_init ER_same_params_per_layer --fix --lr 0.1 --density 0.01 --model resnet50 --data cifar100 --epoch 160
 ```
 ### ER Dynamic Sparse Training
