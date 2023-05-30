@@ -5,20 +5,12 @@
 
 
 ### Random Pruning
-Arguments:
-```
---sparse: Enable sparse mode
---fix: Fix the sparse pattern during training
---sparse-init: Type of sparse initialization. Choose from: ERK, ER_same_params, pyramid, snip, ER_imp, ER_synflow
---model (str): Network architecture. Choose from: vgg16, vgg19, resnet18, resnet20, resnet50
---data: Dataset. Choose from: cifar10, cifar100, tiny_imagenet
---density (float): Density level. Default: 0.05
-```
+Initialize and train an ER network with a specified layerwise sparsity ratio.
 
 Commands:
 ```
 cd STR
-python main.py --sparse --seed 1 --sparse_init ER_same_params_per_layer --fix --lr 0.1 --density 0.01 --model resnet50 --data cifar100 --epoch 160
+python main.py --seed 1 --resnet-type large --config configs/largescale/resnet18-cifar-str-1.yaml --threshold-list  --multigpu 0 --er-sparse-method uniform --er-sparse-init 0.2 --name cifar-imp-er-uniform-0.2 --final_prune_epoch 150 --result-dir results --warmup-epochs 0 --prune-scheduler cosine --expt-setup rml --lr 0.1
 ```
 ### ER Dynamic Sparse Training
 ```
@@ -57,7 +49,16 @@ cd ER_SLT
 python cifar_main.py --model Resnet18 --save-model --er-init-density 0.5 --save_file runs-strong-tick-anneal-lr-0.1-2 --sparsity 0.2 --anneal False --initBias kn-zero-bias --epochs 100 --levels 5 --lr 0.1 --seed 2
 ```
 
-### ER with STR
+### Sparse to Sparse (IMP)
+Initialize an ER network and perform Iterative Magnitude Pruning starting from a sparse network.
+See `run_imp.py` for details to initialize an ER network and perform IMP.
+
+```
+cd STR
+python run_imp.py
+```
+
+### Sparse to Sparse (STR)
 Arguments:
 ```
 set: cifar10
@@ -89,19 +90,8 @@ cd STR
 python main.py --config configs/largescale/resnet18-cifar-str-3.yaml
 ```
 
-## Pre-trained Models
-The following pre-trained models (based on the repository [Synaptic-Flow](https://github.com/ganguli-lab/Synaptic-Flow)) should be downloaded for running experiments with `ER_imp` and `ER_synflow` masks:
-
-| Dataset/Method | IMP | SynFlow |
-|---|---|---|
-| CIFAR10 | [models](https://drive.google.com/drive/folders/1aZqABifecBbniC9sU4s8UUbRr5m00GPm?usp=sharing) | [models](https://drive.google.com/drive/folders/1MYAO7stAgGG6nrirPUXz0pBk65duLdeL?usp=sharing) |
-| CIFAR100 | [models](https://drive.google.com/drive/folders/1ChFGpFymGP23ucW3DlgLL9ONidyYv21U?usp=sharing) | [models](https://drive.google.com/drive/folders/1Lwk5rrFdgh0vFFYGprcVXVJvQLW_kasf?usp=sharing) |
-
-
-## Contributions
-We have added two new random masks to pre-existing code, namely: Uniform (`ER_same_params`) and Pyramid (`pyramid`). We extended ER mask to `ER_imp` and `ER_synflow`. We have also introduced the flow correction (`flow-preservation`) functionality. 
 
 ## Acknowledgements
 We would like to acknowledge the following code repositories on which our code is based:
 - [Random_Pruning](https://github.com/VITA-Group/Random_Pruning)
-- [Synaptic-Flow](https://github.com/ganguli-lab/Synaptic-Flow)
+- [STR](https://github.com/RAIVNLab/STR)
