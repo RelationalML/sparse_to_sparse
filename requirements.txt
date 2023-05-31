@@ -1,0 +1,15 @@
+# This file may be used to create an environment using:
+# $ conda create --name <env> --file <this file>
+matplotlib-inline=0.1.6=pyhd8ed1ab_0
+numpy=1.23.1=py310hdcd3fac_0
+pandas=1.5.0=pypi_0
+python=3.10.4=hdfd78df_0
+pytorch=1.13.1=py3.10_0
+pytz=2022.2.1=pyhd8ed1ab_0
+scikit-learn=1.1.2=py310he9d5cce_0
+scipy=1.9.2=pypi_0
+seaborn=0.12.1=pypi_0
+tensorboard=2.11.0=pyhd8ed1ab_0
+tmux=3.3a=hca72f7f_0
+torchvision=0.14.1=py310_cpu
+tqdm=4.64.1=pypi_0
