@@ -1,8 +1,11 @@
-# Official code for the paper: 'Why Random Pruning Is All We Need to Start Sparse' published in ICML 2023.
+# Official code for the paper: 'Why Random Pruning Is All We Need to Start Sparse' published in ICML 2023 (https://arxiv.org/abs/2210.02412).
+
 
 
 ## Experiments
 
+### Requirements
+See `requirements.txt` for required packages. You can set up a conda environment with this file.
 
 ### Random Pruning
 Initialize and train an ER network with a specified layerwise sparsity ratio.
