@@ -93,6 +93,9 @@ cd STR
 python main.py --config configs/largescale/resnet18-cifar-str-3.yaml
 ```
 
+### Tabular Data
+
+See `tabular.ipynb` for an example to run sparse to sparse training on tabular data.
 
 ## Acknowledgements
 We would like to acknowledge the following code repositories on which our code is based:
