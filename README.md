@@ -101,3 +101,5 @@ See `tabular.ipynb` for an example to run sparse to sparse training on tabular d
 We would like to acknowledge the following code repositories on which our code is based:
 - [Random_Pruning](https://github.com/VITA-Group/Random_Pruning)
 - [STR](https://github.com/RAIVNLab/STR)
+- [GCN](https://github.com/meliketoy/graph-cnn.pytorch)
+- [Algorithmic Data](https://github.com/ejmichaud/grokking-squared/blob/main/notebooks/erics-implementation.ipynb)
