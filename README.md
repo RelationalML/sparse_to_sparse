@@ -1,4 +1,4 @@
-# Official code for the paper: 'Why Random Pruning Is All We Need to Start Sparse' published in ICML 2023 (https://arxiv.org/abs/2210.02412).
+# Official code for the paper: 'Why Random Pruning Is All We Need to Start Sparse' accepted at ICML 2023 (https://arxiv.org/abs/2210.02412).
 
 
 
